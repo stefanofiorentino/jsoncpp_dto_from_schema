@@ -23,7 +23,6 @@
 
 #include <sstream>
 #include <jsoncpp/json/json.h>
-#include <jsoncpp_support/jsoncpp_support.hpp>
 
 // SFINAE test
 template<typename, typename T>
@@ -86,6 +85,17 @@ fromJsonStringToBeanVector(std::string const &jsonString)
         throw std::runtime_error("jsonString is not an array: use fromJsonStringToSceneBean instead.");
     }
     return returnSceneBeanVector;
+}
+
+
+template<typename T>
+inline typename std::enable_if<!std::is_same<T, int>::value &&
+!std::is_same<T, double>::value &&
+!std::is_same<T, std::string>::value &&
+!std::is_same<T, std::vector<std::string>>::value, T>::type
+getGenericValue(Json::Value const &root, std::string const &member)
+{
+    return T(root[member]);
 }
 
 template<typename INT>

@@ -27,6 +27,7 @@ target_link_libraries(
 
 configure_file(${CMAKE_SOURCE_DIR}/schemas/product.json.schema schemas/product.json.schema COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/schemas/product.tags.json.schema schemas/product.tags.json.schema COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/schemas/product.nested.json.schema schemas/product.nested.json.schema COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/templates/class.hpp.template templates/class.hpp.template COPYONLY)
 
 add_subdirectory(test)

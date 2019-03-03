@@ -2,7 +2,35 @@
 
 #include <jsoncpp/json/json.h>
 #include <jsoncpp_support/jsoncpp_support.hpp>
+{{needsString}}
 {{needsVector}}
+
+
+{{# nested_type_properties}}
+class {{property}} {
+public:
+
+    {{property}}() = default;
+    {{property}}({{property}} const &) = default;
+    explicit {{property}}(Json::Value const &root)
+    {}
+
+
+    Json::Value toJsonValue() const
+    {
+        Json::Value jsonValue;
+
+        // TODO: fields go here
+
+        return jsonValue;
+    }
+
+    std::string toStyledString() const
+    {
+        return this->toJsonValue().toStyledString();
+    }
+};
+{{/ nested_type_properties}}
 
 /**
  * {{json_schema_description}}
@@ -12,12 +40,14 @@ class {{json_schema_title}} {
 public:
     {{json_schema_title}}() = default;
     {{json_schema_title}}({{json_schema_title}} const &) = default;
-    //{{json_schema_title}}({{json_schema_title}} &&) = default;
-    //{{json_schema_title}} &operator=({{json_schema_title}} const &) = default;
-    //{{json_schema_title}} &operator=({{json_schema_title}} &&) = default;
-    explicit {{json_schema_title}}(Json::Value const &root) :
-        {{# fromJsonValue_properties}}{{property}}, {{/ fromJsonValue_properties}}
-    {}
+    explicit {{json_schema_title}}(Json::Value const &root)
+    {
+        {{# fromJsonValue_properties}}
+
+        {{property}}
+
+        {{/ fromJsonValue_properties}}
+    }
 
     {{# properties}}
     /**
@@ -31,7 +61,11 @@ public:
     Json::Value toJsonValue() const
     {
         Json::Value jsonValue;
-{{# toJsonValue_properties}}{{property}}{{/ toJsonValue_properties}}
+        {{# toJsonValue_properties}}
+
+        {{property}}
+
+        {{/ toJsonValue_properties}}
         return jsonValue;
     }
 
