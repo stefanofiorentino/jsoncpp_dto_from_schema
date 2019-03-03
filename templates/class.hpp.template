@@ -1,0 +1,46 @@
+#pragma once
+
+#include <jsoncpp/json/json.h>
+#include <jsoncpp_support/jsoncpp_support.hpp>
+
+/**
+ * {{json_schema_description}}
+ */
+class {{json_schema_title}} {
+
+public:
+    {{json_schema_title}}() = default;
+    {{json_schema_title}}({{json_schema_title}} const &) = default;
+    {{json_schema_title}}({{json_schema_title}} &&) = default;
+    {{json_schema_title}} &operator=({{json_schema_title}} const &) = default;
+    {{json_schema_title}} &operator=({{json_schema_title}} &&) = default;
+    explicit {{json_schema_title}}(Json::Value const &root)
+    {
+        {{# properties}}
+        {{json_schema_title}}::{{name}} = getGenericValue<{{type}}>(root, "{{name}}");
+        {{/ properties}}
+    }
+
+    {{# properties}}
+    /**
+     * {{description}}
+     */
+    const {{type}} & get_{{name}}() const { return {{name}}; }
+    {{type}} & get_mutable_{{name}}() { return {{name}}; }
+    void set_{{name}}(const {{type}} & {{name}}) { {{json_schema_title}}::{{name}} = {{name}}; }
+    {{/ properties}}
+
+    Json::Value toJsonValue() const
+    {
+        Json::Value jsonValue;
+        {{# properties}}
+        jsonValue["{{name}}"] = {{json_schema_title}}::{{name}};
+        {{/ properties}}
+        return jsonValue;
+    }
+
+private:
+    {{# properties}}
+        {{type}} {{name}};
+    {{/ properties}}
+};
