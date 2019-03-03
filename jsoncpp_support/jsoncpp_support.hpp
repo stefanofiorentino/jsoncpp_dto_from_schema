@@ -21,6 +21,7 @@
 #ifndef JSONCPP_DTO_FROM_SCHEMA_JSONCPP_SUPPORT_HPP
 #define JSONCPP_DTO_FROM_SCHEMA_JSONCPP_SUPPORT_HPP
 
+#include <sstream>
 #include <jsoncpp/json/json.h>
 #include <jsoncpp_support/jsoncpp_support.hpp>
 
@@ -87,10 +88,8 @@ fromJsonStringToBeanVector(std::string const &jsonString)
     return returnSceneBeanVector;
 }
 
-template <typename INT>
-inline
-typename std::enable_if<std::is_same<INT, int>::value ||
-        std::is_same<INT, int64_t>::value, INT>::type
+template<typename INT>
+inline typename std::enable_if<std::is_same<INT, int>::value, INT>::type
 getGenericValue(Json::Value const &root, std::string const &member)
 {
     if (root.isMember(member))
@@ -102,9 +101,21 @@ getGenericValue(Json::Value const &root, std::string const &member)
     }
 }
 
-template <typename T>
-inline
-typename std::enable_if<std::is_same<T, std::string>::value, T>::type
+template<typename DOUBLE>
+inline typename std::enable_if<std::is_same<DOUBLE, double>::value, DOUBLE>::type
+getGenericValue(Json::Value const &root, std::string const &member)
+{
+    if (root.isMember(member))
+    {
+        if (root[member].isInt())
+        {
+            return root[member].asDouble();
+        }
+    }
+}
+
+template<typename STRING>
+inline typename std::enable_if<std::is_same<STRING, std::string>::value, STRING>::type
 getGenericValue(Json::Value const &root, std::string const &member)
 {
     if (root.isMember(member))
@@ -114,6 +125,30 @@ getGenericValue(Json::Value const &root, std::string const &member)
             return root[member].asString();
         }
     }
+}
+
+template<typename STRING_VECTOR>
+inline typename std::enable_if<std::is_same<STRING_VECTOR, std::vector<std::string>>::value, STRING_VECTOR>::type
+getGenericValue(Json::Value const &root, std::string const &member)
+{
+    STRING_VECTOR vec;
+    if (root.isMember(member))
+    {
+        if (root[member].isArray())
+        {
+            if (!root[member].empty())
+            {
+                for (auto it = 0u; it < root[member].size(); ++it)
+                {
+                    if (root[member][it].isString())
+                    {
+                        vec.push_back(root[member][it].asString());
+                    }
+                }
+            }
+        }
+    }
+    return vec;
 }
 
 #endif //JSONCPP_DTO_FROM_SCHEMA_JSONCPP_SUPPORT_HPP

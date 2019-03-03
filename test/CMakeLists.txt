@@ -1,7 +1,7 @@
 include_directories(
         ${CMAKE_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/test
-        ${CMAKE_SOURCE_DIR}/test/Catch2/single_include/catch2/
+        ${CMAKE_SOURCE_DIR}/test/Catch2/single_include/catch2
 )
 
 add_executable(
@@ -15,5 +15,5 @@ target_link_libraries(
 )
 
 add_dependencies(jsoncpp_dto_from_schema_test
-        jsoncpp_dto_from_schema
+                generate_dto
 )

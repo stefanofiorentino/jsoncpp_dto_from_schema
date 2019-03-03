@@ -1,7 +1,8 @@
-#pragma once
+//#pragma once
 
 #include <jsoncpp/json/json.h>
 #include <jsoncpp_support/jsoncpp_support.hpp>
+{{needsVector}}
 
 /**
  * {{json_schema_description}}
@@ -11,36 +12,41 @@ class {{json_schema_title}} {
 public:
     {{json_schema_title}}() = default;
     {{json_schema_title}}({{json_schema_title}} const &) = default;
-    {{json_schema_title}}({{json_schema_title}} &&) = default;
-    {{json_schema_title}} &operator=({{json_schema_title}} const &) = default;
-    {{json_schema_title}} &operator=({{json_schema_title}} &&) = default;
-    explicit {{json_schema_title}}(Json::Value const &root)
-    {
-        {{# properties}}
-        {{json_schema_title}}::{{name}} = getGenericValue<{{type}}>(root, "{{name}}");
-        {{/ properties}}
-    }
+    //{{json_schema_title}}({{json_schema_title}} &&) = default;
+    //{{json_schema_title}} &operator=({{json_schema_title}} const &) = default;
+    //{{json_schema_title}} &operator=({{json_schema_title}} &&) = default;
+    explicit {{json_schema_title}}(Json::Value const &root) :
+        {{# fromJsonValue_properties}}{{property}}, {{/ fromJsonValue_properties}}
+    {}
 
     {{# properties}}
     /**
      * {{description}}
      */
-    const {{type}} & get_{{name}}() const { return {{name}}; }
-    {{type}} & get_mutable_{{name}}() { return {{name}}; }
+    const {{type}} &get_{{name}}() const { return {{name}}; }
+    {{type}} &get_mutable_{{name}}() { return {{name}}; }
     void set_{{name}}(const {{type}} & {{name}}) { {{json_schema_title}}::{{name}} = {{name}}; }
     {{/ properties}}
 
     Json::Value toJsonValue() const
     {
         Json::Value jsonValue;
-        {{# properties}}
-        jsonValue["{{name}}"] = {{json_schema_title}}::{{name}};
-        {{/ properties}}
+{{# toJsonValue_properties}}{{property}}{{/ toJsonValue_properties}}
         return jsonValue;
     }
 
+    std::string toStyledString() const
+    {
+        return this->toJsonValue().toStyledString();
+    }
+
 private:
-    {{# properties}}
-        {{type}} {{name}};
-    {{/ properties}}
+{{# properties}}
+    {{type}} {{name}};
+{{/ properties}}
 };
+
+inline std::string to_string({{json_schema_title}} const &obj)
+{
+    return obj.toStyledString();
+}
